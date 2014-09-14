@@ -1,7 +1,7 @@
 Chronyk
 ======
 
-[![Build Status](http://img.shields.io/travis/KoffeinFlummi/PyGHI.svg?style=flat-square)](https://travis-ci.org/KoffeinFlummi/PyGHI) [![License](http://img.shields.io/badge/license-MIT-red.svg?style=flat-square)](https://github.com/KoffeinFlummi/PyGHI/blob/master/LICENSE)
+[![Build Status](http://img.shields.io/travis/KoffeinFlummi/Chronyk.svg?style=flat-square)](https://travis-ci.org/KoffeinFlummi/Chronyk) [![License](http://img.shields.io/badge/license-MIT-red.svg?style=flat-square)](https://github.com/KoffeinFlummi/Chronyk/blob/master/LICENSE)
 
 A small Python 3 library containing some handy tools for handling time, especially when it comes to interfacing with those pesky humans.
 
@@ -28,6 +28,8 @@ $ python3 setup.py install
 >>> from chronyk import Chronyk
 >>> t = Chronyk(1410531179.0)
 >>> t = Chronyk("May 2nd, 2016 12:51 am")
+>>> t = Chronyk("yesterday")
+>>> t = Chronyk("April 4th, 2015")
 >>> t = Chronyk("2 days and 30 hours ago")
 >>> t.ctime()
 'Tue Sep  9 05:59:39 2014'
@@ -49,7 +51,7 @@ import chronyk
 
 timestr = input("Please enter the date you were born: ")
 try:
-    date = chronyk.Chronyk(timestr, allowFuture=False)
+    date = chronyk.Chronyk(timestr, allowfuture=False)
 except chronyk.DateRangeError:
     print("Yeah, right.")
     sys.exit(1)
