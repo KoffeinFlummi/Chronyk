@@ -153,8 +153,6 @@ class Chronyk:
         dateformats = [
             # ISO
             "%Y-%m-%d",
-            # local
-            "%X",
             # YMD other than ISO
             "%Y%m%d",
             "%Y.%m.%d",
@@ -218,8 +216,6 @@ class Chronyk:
             "%H:%M:%S %z",
             "%H:%M:%S %z",
             "%H:%M:%S",
-            # local
-            "%x",
             # 24 hour clock without seconds
             "%H:%M %z",
             "%H:%M %Z",
