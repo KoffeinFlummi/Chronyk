@@ -4,5 +4,11 @@ python:
   - "3.3"
   - "3.4"
 
-install: "python setup.py install"
-script: "python test.py"
+before_script:
+  - pip install python-coveralls
+install:
+  - python setup.py install
+script:
+  - python test.py
+after_success:
+  - coveralls
