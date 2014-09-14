@@ -3,6 +3,7 @@
 import os
 import sys
 import time
+import datetime
 
 from chronyk import LOCALTZ, Chronyk, currentutc, DateRangeError
 
@@ -77,11 +78,14 @@ def main():
   else:
     raise DateRangeError
 
+  # Datetime
+  assert(Chronyk(currentutc(), timezone=0).datetime() == datetime.datetime.utcnow())
+
   # Timestamp
-  tstamp = time.time()
-  assert(Chronyk(tstamp).timestamp() == tstamp)
-  assert(Chronyk(tstamp, timezone=0).timestamp(timezone=-7200) == tstamp + 7200)
-  assert(Chronyk(tstamp, timezone=-7200).timestamp(timezone=0) == tstamp - 7200)
+  timest = time.time()
+  assert(Chronyk(timest).timestamp() == timest)
+  assert(Chronyk(timest, timezone=0).timestamp(timezone=-7200) == timest + 7200)
+  assert(Chronyk(timest, timezone=-7200).timestamp(timezone=0) == timest - 7200)
 
   # Timestring
   timest = time.time()
