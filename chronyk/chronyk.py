@@ -41,6 +41,11 @@ class Chronyk:
     :param allowfuture = True
         Determines if values from the future are allowed. This can be handy when
         parsing direct user input.
+
+    If the passed values exceeds the bounds set by allowpast and allowfuture,
+    a chronyk.DateRangeError is raised. If the type of the value is unknown to
+    Chronyk, a TypeError is raised. If Chronyk fails to parse a given string, a
+    ValueError is raised.
     """
 
     def __init__(
