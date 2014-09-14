@@ -9,14 +9,14 @@ A small Python 3 library containing some handy tools for handling time, especial
 ## Features
 - Parsing human-written strings ("10 minutes ago", "10. April 2015", "2014-02-15"...)
 - Relative time string creation ("in 2 hours", "5 hours ago")
+- Various input formats
 - Easy to use
-- that's really it...
 
 
 ## Installation
 
 ```bash
-$ python3 setup.py install
+$ pip install chronyk
 ```
 
 
