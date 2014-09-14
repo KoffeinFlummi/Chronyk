@@ -29,7 +29,7 @@ $ python3 setup.py install
 >>> t = Chronyk(1410531179.0)
 >>> t = Chronyk("May 2nd, 2016 12:51 am")
 >>> t = Chronyk("yesterday")
->>> t = Chronyk("April 4th, 2015")
+>>> t = Chronyk("21. 8. 1976 23:18")
 >>> t = Chronyk("2 days and 30 hours ago")
 >>> t.ctime()
 'Tue Sep  9 05:59:39 2014'
