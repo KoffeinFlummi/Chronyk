@@ -66,7 +66,7 @@ else:
 
 By default, the Chronyk constructor uses local time, and every method by default uses whatever was passed to the constructor as well.
 
-Most methods, however, have a timezone keyargument that you can use to define your local offset from UTC in seconds (positive for west, negative for east).
+Almost all methods, however, have a timezone keyargument that you can use to define your local offset from UTC in seconds (positive for west, negative for east).
 
 If you want to use a certain timezone for more than one method, you can also change the `timezone` instance attribute itself:
 ```python
