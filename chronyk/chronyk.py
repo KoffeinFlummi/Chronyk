@@ -25,13 +25,31 @@ class DateRangeError(Exception):
 class Chronyk:
     """Class containing methods for parsing and outputting times and dates for
     humans. For usage information, consule the module documentation.
+
+    :param timestr = current time
+        This can be either a timestamp, a datetime object or a string
+        describing a time or date.
+
+    :param timezone = local timezone
+        The timezone (in seconds west of UTC) the given time is in. By default,
+        the local tz is used. To use UTC, use timezone=0.
+
+    :param allowpast = True
+        Determines if values from the past are allowed. This can be handy when
+        parsing direct user input.
+
+    :param allowfuture = True
+        Determines if values from the future are allowed. This can be handy when
+        parsing direct user input.
     """
 
     def __init__(
-            self, timestr=time.time(), timezone=LOCALTZ,
+            self, timestr=None, timezone=LOCALTZ,
             allowpast=True, allowfuture=True):
         """ Converts input to UTC timestamp. """
 
+        if timestr is None:
+            timestr = time.time()
         self.timezone = timezone
 
         if type(timestr) == str:
