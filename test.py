@@ -79,7 +79,8 @@ def main():
     raise DateRangeError
 
   # Datetime
-  assert(Chronyk(currentutc(), timezone=0).datetime() == datetime.datetime.utcnow())
+  timest = currentutc()
+  assert(Chronyk(timest, timezone=0).datetime() == datetime.datetime.fromtimestamp(timest))
 
   # Timestamp
   timest = time.time()
