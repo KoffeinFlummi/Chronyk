@@ -4,7 +4,7 @@ from setuptools import setup
 
 setup(
   name = "Chronyk",
-  version = "0.9",
+  version = "0.9.1",
 
   packages = ["chronyk"],
   install_requires = [],

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-"""Chronyk v1.0
+"""Chronyk v0.9.1
 =================================================
 
 Human-written and human-readable dates and times.
@@ -40,7 +40,7 @@ Copyright 2014 Felix Wiegand
 """
 
 __title__ = "Chronyk"
-__version__ = "0.9"
+__version__ = "0.9.1"
 __author__ = "Felix \"KoffeinFlummi\" Wiegand"
 __license__ = "MIT"
 __copyright__ = "Copyright 2014 Felix Wiegand"
