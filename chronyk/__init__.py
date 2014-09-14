@@ -16,15 +16,15 @@ Basic Usage:
 >>> t = chronyk.Chronyk(somedatetimeobject)
 
 # Output
->>> t.timeStamp()
+>>> t.timestamp()
 1410508814.295184
->>> t.timeString()
+>>> t.timestring()
 "2014-09-12 10:00:14"
->>> t.timeString("%Y-%m-%d")
+>>> t.timestring("%Y-%m-%d")
 "2014-09-12"
 >>> t.ctime()
 "Fri Sep 12 10:00:14 2014"
->>> t.relativeString()
+>>> t.relativestring()
 "10 seconds ago"
 
 

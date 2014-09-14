@@ -31,13 +31,13 @@ $ python3 setup.py install
 >>> t = Chronyk("2 days and 30 hours ago")
 >>> t.ctime()
 'Tue Sep  9 05:59:39 2014'
->>> t.timeStamp()
+>>> t.timestamp()
 1410235179.0
->>> t.timeString()
+>>> t.timestring()
 '2014-09-09 05:59:39'
->>> t.timeString("%Y-%m-%d")
+>>> t.timestring("%Y-%m-%d")
 '2014-09-09'
->>> t.relativeString()
+>>> t.relativestring()
 '3 days ago'
 ```
 
@@ -57,7 +57,7 @@ except ValueError:
     print("Failed to parse birthdate.")
     sys.exit(1)
 else:
-    print("You were born {}".format(date.relativeString()))
+    print("You were born {}".format(date.relativestring()))
 ```
 
 **Timezones:**
@@ -71,7 +71,7 @@ If you want to use a certain timezone for more than one method, you can also cha
 >>> t = Chronyk("4 hours ago", timezone=0) # using UTC
 >>> t.ctime()
 'Tue Sep  9 10:53:42 2014'
->>> t.timezone = -3600 # changes to CET DST (UTC+1)
+>>> t.timezone = -3600 # changes to CET (UTC+1)
 >>> t.relativeTime()
 '5 hours ago'
 >>> t.ctime()
@@ -81,7 +81,7 @@ If you want to use a certain timezone for more than one method, you can also cha
 This uses the local relative time and returns a time string relative to current UTC:
 ```python
 >>> t = Chronyk("4 hours ago")
->>> t.relativeString(timezone=0)
+>>> t.relativestring(timezone=0)
 '3 hours ago'
 ```
 
@@ -89,6 +89,6 @@ This uses a UTC timestamp and returns a time string relative to local time:
 ```python
 >>> import time
 >>> t = Chronyk(1410524713.69, timezone=0)
->>> t.relativeString(timezone=time.timezone)
+>>> t.relativestring(timezone=time.timezone)
 '2 hours ago'
 ```
