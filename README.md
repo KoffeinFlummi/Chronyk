@@ -49,7 +49,7 @@ import chronyk
 
 timestr = input("Please enter the date you were born: ")
 try:
-    date = chronyk.Chronyk(timestr, allowFuture=False)
+    date = chronyk.Chronyk(timestr, allowfuture=False)
 except chronyk.DateRangeError:
     print("Yeah, right.")
     sys.exit(1)
