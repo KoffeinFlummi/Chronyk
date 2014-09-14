@@ -58,10 +58,7 @@ class Chronyk:
         self.timezone = timezone
 
         if type(timestr) == str:
-            if timestr.isnumeric():
-                self.__timestamp__ = float(timestr) + self.timezone
-            else:
-                self.__timestamp__ = self.__fromstring__(timestr)
+            self.__timestamp__ = self.__fromstring__(timestr)
 
         elif type(timestr) in [int, float]:
             self.__timestamp__ = timestr + self.timezone
@@ -73,7 +70,7 @@ class Chronyk:
             ]:
             self.__timestamp__ = time.mktime(timestr.timetuple())
 
-        elif type(timestr) == tuple and len(timestr) == 7:
+        elif type(timestr) == time.struct_time:
             self.__timestamp__ = time.mktime(timestr) + self.timezone
 
         else:
@@ -349,7 +346,7 @@ class Chronyk:
         if timezone is None:
             timezone = self.timezone
         timestamp = self.__timestamp__ - timezone
-        return time.strftime(pattern, timestamp)
+        return time.strftime(pattern, time.gmtime(timestamp))
 
     def relativestring(
             self, now=None, minimum=10, maximum=3600*24*30,
