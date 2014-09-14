@@ -28,7 +28,7 @@ Features
 Installation
 ------------
 
-::
+.. code-block:: bash
 
     $ pip install chronyk
 
@@ -37,7 +37,7 @@ Usage
 
 **Basic:**
 
-::
+.. code-block:: python
 
     >>> from chronyk import Chronyk
     >>> t = Chronyk(1410531179.0)
@@ -58,7 +58,7 @@ Usage
 
 **Input validation:**
 
-::
+.. code-block:: python
 
     import sys
     import chronyk
@@ -87,7 +87,7 @@ negative for east).
 If you want to use a certain timezone for more than one method, you can
 also change the ``timezone`` instance attribute itself:
 
-::
+.. code-block:: python
 
     >>> t = Chronyk("4 hours ago", timezone=0) # using UTC
     >>> t.ctime()
@@ -102,7 +102,7 @@ also change the ``timezone`` instance attribute itself:
 This uses the local relative time and returns a time string relative to
 current UTC:
 
-::
+.. code-block:: python
 
     >>> t = Chronyk("4 hours ago")
     >>> t.relativestring(timezone=0)
@@ -112,7 +112,7 @@ current UTC:
 This uses a UTC timestamp and returns a time string relative to local
 time:
 
-::
+.. code-block:: python
 
     >>> t = Chronyk(1410524713.69, timezone=0)
     >>> t.relativestring(timezone=chronyk.LOCALTZ)
