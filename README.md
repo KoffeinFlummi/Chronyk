@@ -87,8 +87,7 @@ This uses the local relative time and returns a time string relative to current 
 
 This uses a UTC timestamp and returns a time string relative to local time:
 ```python
->>> import time
 >>> t = Chronyk(1410524713.69, timezone=0)
->>> t.relativestring(timezone=time.timezone)
+>>> t.relativestring(timezone=chronyk.LOCALTZ)
 '2 hours ago'
 ```
