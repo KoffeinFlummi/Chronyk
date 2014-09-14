@@ -1,7 +1,7 @@
 Chronyk
 ======
 
-[![Build Status](http://img.shields.io/travis/KoffeinFlummi/Chronyk.svg?style=flat-square)](https://travis-ci.org/KoffeinFlummi/Chronyk) [![License](http://img.shields.io/badge/license-MIT-red.svg?style=flat-square)](https://github.com/KoffeinFlummi/Chronyk/blob/master/LICENSE)
+[![Build Status](http://img.shields.io/travis/KoffeinFlummi/Chronyk.svg?style=flat-square)](https://travis-ci.org/KoffeinFlummi/Chronyk) [![Code Coverage](http://img.shields.io/coveralls/KoffeinFlummi/Chronyk.svg?style=flat-square)](https://coveralls.io/r/KoffeinFlummi/Chronyk) [![License](http://img.shields.io/badge/license-MIT-red.svg?style=flat-square)](https://github.com/KoffeinFlummi/Chronyk/blob/master/LICENSE)
 
 A small Python 3 library containing some handy tools for handling time, especially when it comes to interfacing with those pesky humans.
 
