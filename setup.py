@@ -12,7 +12,7 @@ def read(fname):
 
 setup(
   name = "Chronyk",
-  version = "1.0",
+  version = "0.9",
 
   packages = ["chronyk"],
   install_requires = [],

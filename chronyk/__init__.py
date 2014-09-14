@@ -40,7 +40,7 @@ Copyright 2014 Felix Wiegand
 """
 
 __title__ = "Chronyk"
-__version__ = "1.0"
+__version__ = "0.9"
 __author__ = "Felix \"KoffeinFlummi\" Wiegand"
 __license__ = "MIT"
 __copyright__ = "Copyright 2014 Felix Wiegand"
