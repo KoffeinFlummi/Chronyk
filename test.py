@@ -35,6 +35,14 @@ def main():
   assert(t.ctime() == "Sat May  2 00:00:00 2015")
   t = Chronyk("2. August 2010")
   assert(t.ctime() == "Mon Aug  2 00:00:00 2010")
+  t = Chronyk("11:14 am")
+  assert(t.ctime()[11:-5] == "11:14:00")
+  t = Chronyk("11:14:32 am")
+  assert(t.ctime()[11:-5] == "11:14:32")
+  t = Chronyk("17:14")
+  assert(t.ctime()[11:-5] == "17:14:00")
+  t = Chronyk("17:14:32")
+  assert(t.ctime()[11:-5] == "17:14:32")
 
   # Constructor - Relative Strings
   assert(Chronyk().relativestring() == "just now")
