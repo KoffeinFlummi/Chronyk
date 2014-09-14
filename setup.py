@@ -23,5 +23,14 @@ setup(
   long_description = read("README.md"),
   license = "MIT",
   keywords = "time date clock human parser timezone",
-  url = "https://github.com/KoffeinFlummi/PyGHI"
+  url = "https://github.com/KoffeinFlummi/PyGHI",
+  classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Natural Language :: English",
+    "Programming Language :: Python :: 3.2",
+    "Programming Language :: Python :: 3.3",
+    "Programming Language :: Python :: 3.4"
+  ]
 )
