@@ -8,6 +8,7 @@ import calendar
 
 LOCALTZ = time.timezone - 3600 * time.localtime().tm_isdst
 
+
 def currentutc():
     """Returns the current UTC timestamp.
 
@@ -16,11 +17,13 @@ def currentutc():
     """
     return time.time() + LOCALTZ
 
+
 class DateRangeError(Exception):
     """Exception thrown when the value passed to the chronyk.Chronyk
     constructor exceeds the range permitted with allowpast and allowfuture.
     """
     pass
+
 
 class Chronyk:
     """Class containing methods for parsing and outputting times and dates for
@@ -39,8 +42,8 @@ class Chronyk:
         parsing direct user input.
 
     :param allowfuture = True
-        Determines if values from the future are allowed. This can be handy when
-        parsing direct user input.
+        Determines if values from the future are allowed. This can be handy
+        when parsing direct user input.
 
     If the passed values exceeds the bounds set by allowpast and allowfuture,
     a chronyk.DateRangeError is raised. If the type of the value is unknown to
@@ -96,7 +99,9 @@ class Chronyk:
             try:
                 match = re.match(r".*?([0-9]+?) year", timestr)
                 assert not match is None
-                dati = dati.replace(year=dati.year + int(match.group(1))*coef)
+                dati = dati.replace(
+                    year=dati.year + int(match.group(1)) * coef
+                )
             except AssertionError:
                 pass
 
@@ -106,8 +111,8 @@ class Chronyk:
                 match = re.match(r".*?([0-9]+?) month", timestr)
                 assert not match is None
                 months = int(match.group(1))
-                newmonth = (((dati.month - 1) + months*coef) % 12) + 1
-                newyear = dati.year + (((dati.month - 1) + months*coef) / 12)
+                newmonth = (((dati.month - 1) + months * coef) % 12) + 1
+                newyear = dati.year + (((dati.month - 1) + months * coef) / 12)
                 dati = dati.replace(year=int(newyear), month=int(newmonth))
             except AssertionError:
                 pass
@@ -124,10 +129,10 @@ class Chronyk:
         }
 
         for key in delta.keys():
-            if timestr.find(" "+key[:-1]) != -1:
+            if timestr.find(" " + key[:-1]) != -1:
                 try:
                     match = re.match(
-                        re.compile(".*?([0-9]+?) "+key[:-1]),
+                        re.compile(".*?([0-9]+?) " + key[:-1]),
                         timestr
                     )
                     assert not match is None
@@ -195,7 +200,7 @@ class Chronyk:
             "%d %m %y",
             "%d-%m-%y",
             "%d/%m/%y",
-            "%d/%m-%y", # why denmark?
+            "%d/%m-%y",  # why denmark?
             "%d.%m.%y",
             "%d. %m. %y",
             "%d %b %y",
@@ -273,10 +278,10 @@ class Chronyk:
         if timestr in ["today", "now", "this week", "this month", "this day"]:
             return currentutc()
         if timestr in ["yesterday", "yester day"]:
-            return currentutc() - 24*3600
+            return currentutc() - 24 * 3600
         if timestr in ["yesteryear", "yester year"]:
             dati = datetime.datetime.utcnow()
-            return time.mktime(dati.replace(year=dati.year-1).timetuple())
+            return time.mktime(dati.replace(year=dati.year - 1).timetuple())
 
         # RELATIVE TIMES
         relative = self.__fromrelative__(timestr)
@@ -295,6 +300,13 @@ class Chronyk:
             return "1 {}".format(string)
         else:
             return "{} {}s".format(value, string)
+
+    def __round__(self, num):
+        deci = num - math.floor(num)
+        if deci > 0.8:
+            return math.floor(num) + 1
+        else:
+            return math.floor(num)
 
     def datetime(self, timezone=None):
         """Returns a datetime object.
@@ -357,7 +369,7 @@ class Chronyk:
         return time.strftime(pattern, time.gmtime(timestamp))
 
     def relativestring(
-            self, now=None, minimum=10, maximum=3600*24*30,
+            self, now=None, minimum=10, maximum=3600 * 24 * 30,
             pattern="%Y-%m-%d", timezone=None):
         """Returns a relative time string (e.g. "10 seconds ago").
 
@@ -399,10 +411,14 @@ class Chronyk:
         if diff > maximum and maximum > 0:
             return self.timestring(pattern)
 
-        days = math.floor(diff / (24*3600))
-        hours = math.floor((diff - (days*24*3600)) / 3600)
-        minutes = math.floor((diff - (days*24*3600) - (hours*3600)) / 60)
-        seconds = math.floor(diff-(days*24*3600)-(hours*3600)-(minutes*60))
+        days = diff / (24 * 3600)
+        days = self.__round__(days)
+        hours = (diff - (days * 24 * 3600)) / 3600
+        hours = self.__round__(hours) if hours > 0 else 0
+        minutes = (diff - (days * 24 * 3600) - (hours * 3600)) / 60
+        minutes = self.__round__(minutes) if minutes > 0 else 0
+        seconds = diff - (days * 24 * 3600) - (hours * 3600) - (minutes * 60)
+        seconds = self.__round__(seconds) if seconds > 0 else 0
 
         if days == 1:
             return "tomorrow" if future else "yesterday"

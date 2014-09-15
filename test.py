@@ -54,17 +54,17 @@ def main():
   assert Chronyk(timest - 5).relativestring(now=timest, minimum=0) == "5 seconds ago"
   # minutes
   assert Chronyk("1 minute ago").relativestring() == "1 minute ago"
-  assert Chronyk("in 2 minutes and 30 seconds").relativestring() == "in 2 minutes"
+  assert Chronyk("in 2 minutes").relativestring() == "in 2 minutes"
   # hours
   assert Chronyk("1 hour ago").relativestring() == "1 hour ago"
-  assert Chronyk("in 2 hours and 10 seconds").relativestring() == "in 2 hours"
+  assert Chronyk("in 2 hours").relativestring() == "in 2 hours"
   # days
   assert Chronyk("10 days ago").relativestring() == "10 days ago"
-  assert Chronyk("in 20 days and 5 minutes").relativestring() == "in 20 days"
+  assert Chronyk("in 20 days").relativestring() == "in 20 days"
   # weeks
   assert Chronyk("1 week ago").relativestring() == "7 days ago"
-  assert Chronyk("in 2 weeks and 1 hour").relativestring() == "in 14 days"
-  assert Chronyk("in blurgh weeks, 2 days and 1 minute").relativestring() == "in 2 days"
+  assert Chronyk("in 2 weeks").relativestring() == "in 14 days"
+  assert Chronyk("in blurgh weeks and 2 days").relativestring() == "in 2 days"
   # months
   assert Chronyk("overninethousand months and 2 days ago").relativestring() == "2 days ago"
   dati = datetime.datetime.utcnow()
