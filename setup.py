@@ -9,7 +9,7 @@ setup(
   packages = ["chronyk"],
   install_requires = [],
 
-  author = "Felix \"KoffeinFlummi\" Wiegand",
+  author = 'Felix "KoffeinFlummi" Wiegand',
   author_email = "koffeinflummi@gmail.com",
   description = "A library for parsing human-written times and dates.",
   long_description = """
