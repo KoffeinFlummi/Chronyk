@@ -67,10 +67,7 @@ class Chronyk:
             self.__timestamp__ = timestr + self.timezone
 
         elif type(timestr) in [
-                datetime.datetime,
-                datetime.date,
-                datetime.time
-            ]:
+                datetime.datetime, datetime.date, datetime.time]:
             self.__timestamp__ = time.mktime(timestr.timetuple())
 
         elif type(timestr) == time.struct_time:
@@ -98,7 +95,7 @@ class Chronyk:
         if timestr.find(" year") != -1:
             try:
                 match = re.match(r".*?([0-9]+?) year", timestr)
-                assert not match is None
+                assert match is not None
                 dati = dati.replace(
                     year=dati.year + int(match.group(1)) * coef
                 )
@@ -109,7 +106,7 @@ class Chronyk:
         if timestr.find(" month") != -1:
             try:
                 match = re.match(r".*?([0-9]+?) month", timestr)
-                assert not match is None
+                assert match is not None
                 months = int(match.group(1))
                 newmonth = (((dati.month - 1) + months * coef) % 12) + 1
                 newyear = dati.year + (((dati.month - 1) + months * coef) / 12)
@@ -135,7 +132,7 @@ class Chronyk:
                         re.compile(".*?([0-9]+?) " + key[:-1]),
                         timestr
                     )
-                    assert not match is None
+                    assert match is not None
                     delta[key] += int(match.group(1))
                 except AssertionError:
                     pass
@@ -251,7 +248,7 @@ class Chronyk:
                 pass
             else:
                 timestamp = time.mktime(struct)
-                if not "z" in dateformat.lower():
+                if "z" not in dateformat.lower():
                     # string doesn't contains timezone information.
                     timestamp += self.timezone
                 return timestamp
@@ -266,7 +263,7 @@ class Chronyk:
                 pass
             else:
                 timestamp = time.mktime(struct)
-                if not "z" in timeformat.lower():
+                if "z" not in timeformat.lower():
                     # string doesn't contains timezone information.
                     timestamp += self.timezone
                 return timestamp
@@ -285,12 +282,12 @@ class Chronyk:
 
         # RELATIVE TIMES
         relative = self.__fromrelative__(timestr)
-        if not relative is None:
+        if relative is not None:
             return relative
 
         # ABSOLUTE TIMES
         absolute = self.__fromabsolute__(timestr)
-        if not absolute is None:
+        if absolute is not None:
             return absolute
 
         raise ValueError("Failed to parse time string.")
