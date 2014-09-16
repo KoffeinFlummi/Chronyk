@@ -304,9 +304,9 @@ class Chronyk:
     def __round__(self, num):
         deci = num - math.floor(num)
         if deci > 0.8:
-            return math.floor(num) + 1
+            return int(math.floor(num) + 1)
         else:
-            return math.floor(num)
+            return int(math.floor(num))
 
     def datetime(self, timezone=None):
         """Returns a datetime object.
