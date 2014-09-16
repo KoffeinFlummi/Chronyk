@@ -45,4 +45,11 @@ __author__ = "Felix \"KoffeinFlummi\" Wiegand"
 __license__ = "MIT"
 __copyright__ = "Copyright 2014 Felix Wiegand"
 
-from .chronyk import Chronyk, DateRangeError, LOCALTZ, currentutc
+from .chronyk import LOCALTZ
+
+from .chronyk import Chronyk
+from .chronyk import ChronykDelta
+from .chronyk import DateRangeError
+
+from .chronyk import currentutc
+from .chronyk import guesstype

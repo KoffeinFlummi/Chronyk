@@ -3,6 +3,7 @@
 import re
 import math
 import time
+import collections
 import datetime
 import calendar
 
@@ -16,6 +17,42 @@ def currentutc():
     doesn't factor in DST and thus doesn't actually return a utc timestamp.
     """
     return time.time() + LOCALTZ
+
+
+def guesstype(timestr):
+    """Tries to guess whether a string represents a time or a time delta and
+    returns the appropriate object.
+
+    :param timestr (required)
+        The string to be analyzed
+    """
+    timestr_full = " {} ".format(timestr)
+    if timestr_full.find(" in ") != -1 or timestr_full.find(" ago ") != -1:
+        return Chronyk(timestr)
+
+    comps = ["second", "minute", "hour", "day", "week", "month", "year"]
+    for comp in comps:
+        if timestr_full.find(comp) != -1:
+            return ChronykDelta(timestr)
+
+    return Chronyk(timestr)
+
+
+def _round(num):
+    """A custom rounding function that's a bit more 'strict'.
+    """
+    deci = num - math.floor(num)
+    if deci > 0.8:
+        return int(math.floor(num) + 1)
+    else:
+        return int(math.floor(num))
+
+
+def _pluralstr(string, value):
+    if value == 1:
+        return "1 {}".format(string)
+    else:
+        return "{} {}s".format(value, string)
 
 
 class DateRangeError(Exception):
@@ -47,8 +84,11 @@ class Chronyk:
 
     If the passed values exceeds the bounds set by allowpast and allowfuture,
     a chronyk.DateRangeError is raised. If the type of the value is unknown to
-    Chronyk, a TypeError is raised. If Chronyk fails to parse a given string, a
-    ValueError is raised.
+    Chronyk, a TypeError is raised. If Chronyk fails to parse a given string,
+    a ValueError is raised.
+
+    Subtracting Chronyk instances from another will yield a ChronykDelta
+    object, which in turn can be added to other Chronyk instances.
     """
 
     def __init__(
@@ -74,13 +114,85 @@ class Chronyk:
             self.__timestamp__ = time.mktime(timestr) + self.timezone
 
         else:
-            raise TypeError("Invalid type specified.")
+            raise TypeError("Failed to recognize given type.")
 
         if not allowpast and self.__timestamp__ < currentutc():
             raise DateRangeError("Values from the past are not allowed.")
         if not allowfuture and self.__timestamp__ > currentutc():
             raise DateRangeError("Values from the future are not allowed.")
 
+    def __repr__(self):
+        return "Chronyk({})".format(self.timestring())
+
+    # Type Conversions
+    def __str__(self):
+        return self.timestring()
+
+    def __int__(self):
+        return int(self.timestamp(timezone=0))
+
+    def __float__(self):
+        return float(self.timestamp(timezone=0))
+
+    # Comparison Operators
+    def __eq__(self, other):
+        if type(other) == Chronyk:
+            return self.__timestamp__ == other.timestamp(timezone=0)
+        if type(other) in [int, float]:
+            return self.__timestamp__ == other
+
+        return NotImplemented
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
+    def __gt__(self, other):
+        if type(other) == Chronyk:
+            return self.__timestamp__ < other.timestamp(timezone=0)
+        if type(other) in [int, float]:
+            return self.__timestamp__ < other
+
+        return NotImplemented
+
+    def __le__(self, other):
+        return not self.__gt__(other)
+
+    def __lt__(self, other):
+        if type(other) == Chronyk:
+            return self.__timestamp__ < other.timestamp(timezone=0)
+        if type(other) in [int, float]:
+            return self.__timestamp__ < other
+
+        return NotImplemented
+
+    def __ge__(self, other):
+        return not self.__lt__(other)
+
+    # Arithmetic Operators
+    def __add__(self, other):
+        if type(other) == ChronykDelta:
+            newtimest = self.timestamp() + other.seconds
+            return Chronyk(newtimest, timezone=self.timezone)
+        if type(other) in [int, float]:
+            newtimest = self.timestamp() + other
+            return Chronyk(newtimest, timezone=self.timezone)
+
+        return NotImplemented
+
+    def __sub__(self, other):
+        if type(other) == Chronyk:
+            delta = self.__timestamp__ - other.timestamp(timezone=0)
+            return ChronykDelta(delta)
+        if type(other) == ChronykDelta:
+            newtimest = self.timestamp() - other.seconds
+            return Chronyk(newtimest, timezone=self.timezone)
+        if type(other) in [int, float]:
+            newtimest = self.timestamp() - other
+            return Chronyk(newtimest, timezone=self.timezone)
+
+        return NotImplemented
+
+    # Helpers
     def __fromrelative__(self, timestr):
         timestr = " {} ".format(timestr)
 
@@ -293,19 +405,7 @@ class Chronyk:
 
         raise ValueError("Failed to parse time string.")
 
-    def __pluralstr__(self, string, value):
-        if value == 1:
-            return "1 {}".format(string)
-        else:
-            return "{} {}s".format(value, string)
-
-    def __round__(self, num):
-        deci = num - math.floor(num)
-        if deci > 0.8:
-            return int(math.floor(num) + 1)
-        else:
-            return int(math.floor(num))
-
+    # Methods
     def datetime(self, timezone=None):
         """Returns a datetime object.
 
@@ -368,7 +468,7 @@ class Chronyk:
 
     def relativestring(
             self, now=None, minimum=10, maximum=3600 * 24 * 30,
-            pattern="%Y-%m-%d", timezone=None):
+            pattern="%Y-%m-%d", timezone=None, maxunits=1):
         """Returns a relative time string (e.g. "10 seconds ago").
 
         :param now = time.time()
@@ -393,6 +493,10 @@ class Chronyk:
             default, the value used when constructing the class (local tz by
             default) is used. To use UTC, use timezone=0. To use the local TZ,
             use timezone=chronyk.LOCALTZ.
+
+        :param maxunits = 1
+            The maximum amount of units to return. This is identical to the
+            parameter of the same name of ChronykDelta's timestring method.
         """
 
         if now is None:
@@ -409,33 +513,197 @@ class Chronyk:
         if diff > maximum and maximum > 0:
             return self.timestring(pattern)
 
-        days = diff / (24 * 3600)
-        days = self.__round__(days)
-        hours = (diff - (days * 24 * 3600)) / 3600
-        hours = self.__round__(hours) if hours > 0 else 0
-        minutes = (diff - (days * 24 * 3600) - (hours * 3600)) / 60
-        minutes = self.__round__(minutes) if minutes > 0 else 0
-        seconds = diff - (days * 24 * 3600) - (hours * 3600) - (minutes * 60)
-        seconds = self.__round__(seconds) if seconds > 0 else 0
-
-        if days == 1:
+        timestring = ChronykDelta(diff).timestring(maxunits=maxunits)
+        if timestring == "1 day":
             return "tomorrow" if future else "yesterday"
 
-        mask = "in {}" if future else "{} ago"
-        name = ""
-        value = 0
-
-        if days != 0:
-            name = "day"
-            value = days
-        elif hours != 0:
-            name = "hour"
-            value = hours
-        elif minutes != 0:
-            name = "minute"
-            value = minutes
+        if future:
+            return "in {}".format(timestring)
         else:
-            name = "second"
-            value = seconds
+            return "{} ago".format(timestring)
 
-        return mask.format(self.__pluralstr__(name, value))
+
+class ChronykDelta:
+    """Abstraction for a certain amount of time.
+
+    :param timestr (required)
+        The amount of time to represent. This can be either a number
+        (int / float) or a string, which will be parsed accordingly.
+
+    If you supply an unknown type, a TypeError is raised. If the string you
+    passed cannot be parsed, a ValueError is raised.
+    """
+
+    def __init__(self, timestr):
+        if type(timestr) == str:
+            self.seconds = self.__fromstring__(timestr)
+        elif type(timestr) in [int, float]:
+            self.seconds = timestr
+        else:
+            raise TypeError("Failed to recognize given type.")
+
+    def __repr__(self):
+        return "ChronykDelta({})".format(self.timestring())
+
+    # Type Conversions
+    def __str__(self):
+        return self.timestring()
+
+    def __int__(self):
+        return int(self.seconds)
+
+    def __float__(self):
+        return float(self.seconds)
+
+    # Comparison Operators
+    def __eq__(self, other):
+        if type(other) == ChronykDelta:
+            return self.seconds == other.seconds
+        if type(other) in [int, float]:
+            return self.seconds == other
+
+        return NotImplemented
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
+    def __gt__(self, other):
+        if type(other) == ChronykDelta:
+            return self.seconds < other.seconds
+        if type(other) in [int, float]:
+            return self.seconds < other
+
+        return NotImplemented
+
+    def __le__(self, other):
+        return not self.__gt__(other)
+
+    def __lt__(self, other):
+        if type(other) == ChronykDelta:
+            return self.seconds < other.seconds
+        if type(other) in [int, float]:
+            return self.seconds < other
+
+        return NotImplemented
+
+    def __ge__(self, other):
+        return not self.__lt__(other)
+
+    # Arithmetic Operators
+    def __add__(self, other):
+        if type(other) == ChronykDelta:
+            return ChronykDelta(self.seconds + other.seconds)
+        if type(other) == Chronyk:
+            return other + self
+        if type(other) in [int, float]:
+            return ChronykDelta(self.seconds + other)
+
+        return NotImplemented
+
+    def __sub__(self, other):
+        if type(other) == ChronykDelta:
+            return ChronykDelta(self.seconds - other.seconds)
+        if type(other) in [int, float]:
+            return ChronykDelta(self.seconds - other)
+
+        return NotImplemented
+
+    def __mul__(self, other):
+        if type(other) in [int, float]:
+            return ChronykDelta(self.seconds * other)
+
+        return NotImplemented
+
+    def __div__(self, other):
+        if type(other) in [int, float]:
+            return ChronykDelta(self.seconds / other)
+
+        return NotImplemented
+
+    # Methods
+    def __fromstring__(self, timestr):
+        seconds = 0
+
+        comps = {
+            "second": 1,
+            "minute": 60,
+            "hour": 3600,
+            "day": 3600 * 24,
+            "week": 3600 * 24 * 7,
+            "month": 3600 * 24 * 30,
+            "year": 3600 * 24 * 365
+        }
+
+        for k, v in comps.items():
+            try:
+                match = re.match(
+                    re.compile(".*?([0-9]+?) "+k),
+                    timestr
+                )
+                assert match is not None
+                seconds += float(match.group(1)) * v
+            except AssertionError:
+                pass
+
+        return seconds
+
+    def timestring(self, maxunits=3):
+        """Returns a string representation of this amount of time, like:
+        "2 hours and 30 minutes" or "4 days, 2 hours and 40 minutes"
+
+        :param maxunits = 3
+            The maximum amount of units to use.
+
+            1: "2 hours"
+            4: "4 days, 2 hours, 5 minuts and 46 seconds"
+
+        This method ignores the sign of the amount of time (that rhimes).
+        """
+
+        try:
+            assert maxunits >= 1
+        except:
+            raise ValueError("Values < 1 for maxunits are not supported.")
+
+        values = collections.OrderedDict()
+
+        seconds = abs(self.seconds)
+
+        values["year"] = _round(seconds / (3600 * 24 * 365))
+        values["year"] = values["year"] if values["year"] > 0 else 0
+        seconds -= values["year"] * 3600 * 24 * 365
+
+        values["month"] = _round(seconds / (3600 * 24 * 30))
+        values["month"] = values["month"] if values["month"] > 0 else 0
+        seconds -= values["month"] * 3600 * 24 * 30
+
+        values["day"] = _round(seconds / (3600 * 24))
+        values["day"] = values["day"] if values["day"] > 0 else 0
+        seconds -= values["day"] * 3600 * 24
+
+        values["hour"] = _round(seconds / 3600)
+        values["hour"] = values["hour"] if values["hour"] > 0 else 0
+        seconds -= values["hour"] * 3600
+
+        values["minute"] = _round(seconds / 60)
+        values["minute"] = values["minute"] if values["minute"] > 0 else 0
+        values["second"] = _round(seconds - values["minute"] * 60)
+
+        for k, v in values.items():
+            if v == 0:
+                values.pop(k)
+            else:
+                break
+
+        textsegs = []
+        for k, v in list(values.items())[:maxunits]:
+            if v > 0:
+                textsegs.append(_pluralstr(k, v))
+
+        if len(textsegs) == 0:
+            return ""
+        if len(textsegs) == 1:
+            return textsegs[0]
+
+        return ", ".join(textsegs[:-1]) + " and " + textsegs[-1]
+
