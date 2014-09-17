@@ -160,6 +160,9 @@ class Chronyk:
             # YMD other than ISO
             "%Y%m%d",
             "%Y.%m.%d",
+            # Popular MDY formats
+            "%m/%d/%Y",
+            "%m/%d/%y",
             # DMY with full year
             "%d %m %Y",
             "%d-%m-%Y",
@@ -172,7 +175,6 @@ class Chronyk:
             "%d. %b %Y",
             "%d. %B %Y",
             # MDY with full year
-            "%m/%d/%Y",
             "%b %d %Y",
             "%b %dst %Y",
             "%b %dnd %Y",
@@ -205,7 +207,6 @@ class Chronyk:
             "%d. %b %y",
             "%d. %B %y",
             # MDY with 2-digit year
-            "%m/%d/%y",
             "%b %dst %y",
             "%b %dnd %y",
             "%b %drd %y",
