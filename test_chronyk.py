@@ -124,7 +124,7 @@ def test_relative_months_2():
     while dati.day > calendar.monthrange(dati.year, dati.month)[1]:
         dati = dati.replace(day=dati.day - 1)
     timestr = time.strftime("%Y-%m-%d", dati.timetuple())
-    assert Chronyk("in 4 months").relativestring() == timestr
+    assert Chronyk("in 4 months", timezone=0).relativestring() == timestr
 
 def test_relative_years_1():
     assert Chronyk("something years and 2 days ago").relativestring() == "2 days ago"
