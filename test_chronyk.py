@@ -7,7 +7,7 @@ import time
 import calendar
 import datetime
 
-from chronyk import LOCALTZ, Chronyk, currentutc, DateRangeError
+from chronyk import LOCALTZ, Chronyk, ChronykDelta, currentutc, DateRangeError
 
 def isEqual(time1, time2):
     return abs(time1 - time2) < 0.1
@@ -180,6 +180,98 @@ def test_timestring_1():
 def test_timestring_2():
     timest = time.time()
     assert Chronyk(timest).timestring("%Y-%m-%d") == time.strftime("%Y-%m-%d", time.gmtime(timest))
+
+def test_operators_eq():
+    timest = time.time()
+    assert Chronyk(timest) - 5 == Chronyk(timest - 5) and Chronyk(timest, timezone=0) == timest
+
+def test_operators_str():
+    t = Chronyk()
+    assert str(t) == t.timestring()
+
+def test_operators_num():
+    timest = time.time()
+    t = Chronyk(timest, timezone=0)
+    assert int(timest) == int(t) and int(t) == int(float(t))
+
+def test_operators_ne():
+    timest = time.time()
+    assert Chronyk(timest) != Chronyk(timest - 2)
+
+def test_operators_ltgt():
+    timest = time.time()
+    assert Chronyk(timest) > Chronyk(timest - 5)
+    assert Chronyk(timest, timezone=0) > timest - 5
+    assert Chronyk(timest) < Chronyk(timest + 5)
+    assert Chronyk(timest, timezone=0) < timest + 5
+    assert Chronyk(timest) <= Chronyk(timest)
+    assert Chronyk(timest, timezone=0) <= timest
+    assert Chronyk(timest) >= Chronyk(timest - 5)
+    assert Chronyk(timest, timezone=0) >= timest - 5
+
+def test_operators_add():
+    timest = time.time()
+    assert Chronyk(timest) + ChronykDelta(5) == Chronyk(timest + 5)
+    assert Chronyk(timest) + 5 == Chronyk(timest + 5)
+
+def test_operators_sub():
+    timest = time.time()
+    assert Chronyk(timest) - Chronyk(timest - 5) == ChronykDelta(5)
+    assert Chronyk(timest) - ChronykDelta(5) == Chronyk(timest - 5)
+    assert Chronyk(timest, timezone=0) - 5 == timest - 5
+
+def test_delta_timestring_1():
+    assert ChronykDelta("5 hours").timestring() == "5 hours"
+
+def test_delta_timestring_2():
+    assert ChronykDelta("1 week").timestring() == "7 days"
+
+def test_delta_timestring_3():
+    assert ChronykDelta("1 hour").timestring() == "1 hour"
+
+def test_delta_timestring_4():
+    assert ChronykDelta("1 day and 12 hours").timestring() == "1 day and 12 hours"
+
+def test_delta_timestring_5():
+    assert ChronykDelta("1 day and 12 hours").timestring(maxunits=1) == "1 day"
+
+def test_delta_timestring_6():
+    with pytest.raises(ValueError):
+        ChronykDelta("1 day ago").timestring(maxunits=0)
+
+def test_delta_operators_str():
+    assert ChronykDelta(5).timestring() == str(ChronykDelta(5))
+
+def test_delta_operators_num():
+    assert 5 == int(ChronykDelta(5)) and int(ChronykDelta(5)) == float(ChronykDelta(5))
+
+def test_delta_operators_eq():
+    assert ChronykDelta(5) == ChronykDelta(5) and ChronykDelta(5) == 5
+
+def test_delta_operators_neq():
+    assert ChronykDelta(5) != ChronykDelta(6) and ChronykDelta(5) != 3
+
+def test_delta_operators_ltgt():
+    assert ChronykDelta(5) > ChronykDelta(4) and ChronykDelta(5) > 3
+    assert ChronykDelta(5) < ChronykDelta(7) and ChronykDelta(5) < 9
+    assert ChronykDelta(5) >= ChronykDelta(5) and ChronykDelta(5) >= 3
+    assert ChronykDelta(5) <= 5 and ChronykDelta(5) <= ChronykDelta(6)
+
+def test_delta_operators_add():
+    timest = time.time()
+    assert ChronykDelta(5) + ChronykDelta(-5) == 0
+    assert ChronykDelta(5) + Chronyk(timest) == Chronyk(timest + 5)
+    assert ChronykDelta(5) + 10 == 15
+
+def test_delta_operators_sub():
+    assert ChronykDelta(5) - 5 == 0
+    assert ChronykDelta(5) - ChronykDelta(1) == 4
+
+def test_delta_operators_mul():
+    assert ChronykDelta(12) * 2 == 24
+
+def test_delta_operators_div():
+    assert ChronykDelta(10) / 2 == 5
 
 if __name__ == "__main__":
     pytest.main()
