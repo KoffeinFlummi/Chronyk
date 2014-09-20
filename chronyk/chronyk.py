@@ -148,9 +148,9 @@ class Chronyk:
 
     def __gt__(self, other):
         if type(other) == Chronyk:
-            return self.__timestamp__ < other.timestamp(timezone=0)
+            return self.__timestamp__ > other.timestamp(timezone=0)
         if type(other) in [int, float]:
-            return self.__timestamp__ < other
+            return self.__timestamp__ > other
 
         return NotImplemented
 
@@ -569,9 +569,9 @@ class ChronykDelta:
 
     def __gt__(self, other):
         if type(other) == ChronykDelta:
-            return self.seconds < other.seconds
+            return self.seconds > other.seconds
         if type(other) in [int, float]:
-            return self.seconds < other
+            return self.seconds > other
 
         return NotImplemented
 
@@ -614,9 +614,15 @@ class ChronykDelta:
 
         return NotImplemented
 
-    def __div__(self, other):
+    def __truediv__(self, other):
         if type(other) in [int, float]:
             return ChronykDelta(self.seconds / other)
+
+        return NotImplemented
+
+    def __floordiv__(self, other):
+        if type(other) in [int, float]:
+            return int(self.__truediv__(other))
 
         return NotImplemented
 
