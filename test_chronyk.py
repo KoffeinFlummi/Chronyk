@@ -180,3 +180,6 @@ def test_timestring_1():
 def test_timestring_2():
     timest = time.time()
     assert Chronyk(timest).timestring("%Y-%m-%d") == time.strftime("%Y-%m-%d", time.gmtime(timest))
+
+if __name__ == "__main__":
+    pytest.main()
