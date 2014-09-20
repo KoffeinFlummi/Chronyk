@@ -11,6 +11,6 @@ before_script:
 install:
   - python setup.py install
 script:
-  - coverage run --source=chronyk py.test
+  - coverage run --source=chronyk test_chronyk.py -v
 after_success:
   - coveralls
