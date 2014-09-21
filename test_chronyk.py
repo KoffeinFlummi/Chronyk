@@ -7,7 +7,7 @@ import time
 import calendar
 import datetime
 
-from chronyk import LOCALTZ, Chronyk, ChronykDelta, currentutc, DateRangeError
+from chronyk import LOCALTZ, Chronyk, ChronykDelta, currentutc, guesstype, DateRangeError
 
 def isEqual(time1, time2):
     return abs(time1 - time2) < 0.1
@@ -16,6 +16,11 @@ def isEqual(time1, time2):
 
 def test_currentutc():
     currentutc()
+
+def test_guesstype():
+    assert guesstype(9001) == Chronyk(9001)
+    assert guesstype("2 hours ago").relativestring() == Chronyk("2 hours ago").relativestring()
+    assert guesstype("2 hours") == ChronykDelta("2 hours")
 
 def test_empty_con():
     assert isEqual(Chronyk().timestamp(), time.time())
@@ -70,6 +75,10 @@ def test_absolute_24hr():
 def test_absolute_24hr_seconds():
     t = Chronyk("17:14:32")
     assert t.ctime()[11:-5] == "17:14:32"
+
+def test_absolute_value():
+    with pytest.raises(ValueError):
+        Chronyk("warglblargl")
 
 # RELATIVE STRINGS
 
@@ -175,11 +184,11 @@ def test_timest_3():
 
 def test_timestring_1():
     timest = time.time()
-    assert Chronyk(timest).timestring() == time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime(timest))
+    assert Chronyk(timest).timestring() == time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime(timest - LOCALTZ))
 
 def test_timestring_2():
     timest = time.time()
-    assert Chronyk(timest).timestring("%Y-%m-%d") == time.strftime("%Y-%m-%d", time.gmtime(timest))
+    assert Chronyk(timest).timestring("%Y-%m-%d") == time.strftime("%Y-%m-%d", time.gmtime(timest - LOCALTZ))
 
 def test_operators_eq():
     timest = time.time()
@@ -220,6 +229,10 @@ def test_operators_sub():
     assert Chronyk(timest) - ChronykDelta(5) == Chronyk(timest - 5)
     assert Chronyk(timest, timezone=0) - 5 == timest - 5
 
+def test_delta_type():
+    with pytest.raises(TypeError):
+        ChronykDelta(["WEEE", "EEEEE", "EEEEEE"])
+
 def test_delta_timestring_1():
     assert ChronykDelta("5 hours").timestring() == "5 hours"
 
@@ -238,6 +251,9 @@ def test_delta_timestring_5():
 def test_delta_timestring_6():
     with pytest.raises(ValueError):
         ChronykDelta("1 day ago").timestring(maxunits=0)
+
+def test_delta_timestring_7():
+    assert ChronykDelta(0).timestring() == ""
 
 def test_delta_operators_str():
     assert ChronykDelta(5).timestring() == str(ChronykDelta(5))

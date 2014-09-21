@@ -464,6 +464,7 @@ class Chronyk:
         if timezone is None:
             timezone = self.timezone
         timestamp = self.__timestamp__ - timezone
+        timestamp -= LOCALTZ
         return time.strftime(pattern, time.gmtime(timestamp))
 
     def relativestring(
