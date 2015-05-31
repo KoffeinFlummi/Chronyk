@@ -420,6 +420,20 @@ class Chronyk:
         if timezone is None:
             timezone = self.timezone
         return datetime.datetime.fromtimestamp(self.__timestamp__ - timezone)
+        
+    def date(self, timezone=None):
+        """Returns a datetime.date object.
+        This object retains all information, including timezones.
+        
+        :param timezone = self.timezone
+            The timezone (in seconds west of UTC) to return the value in. By
+            default, the timezone used when constructing the class is used
+            (local one by default). To use UTC, use timezone = 0. To use the
+            local tz, use timezone = chronyk.LOCALTZ.
+        """
+        if timezone is None:
+            timezone = self.timezone
+        return datetime.date.fromtimestamp(self.__timestamp__ - timezone)
 
     def timestamp(self, timezone=None):
         """Returns a timestamp (seconds since the epoch).
@@ -713,4 +727,3 @@ class ChronykDelta:
             return textsegs[0]
 
         return ", ".join(textsegs[:-1]) + " and " + textsegs[-1]
-
