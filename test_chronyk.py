@@ -128,10 +128,11 @@ def test_relative_months_1():
 def test_relative_months_2():
     dati = datetime.datetime.utcnow()
     newmonth = (((dati.month - 1) + 4) % 12) + 1
-    newyear = dati.year + (((dati.month - 1) + 4) / 12)
-    dati = dati.replace(year=int(newyear), month=int(newmonth))
-    while dati.day > calendar.monthrange(dati.year, dati.month)[1]:
-        dati = dati.replace(day=dati.day - 1)
+    newyear = dati.year + int(((dati.month - 1) + 4) / 12)
+    newday = dati.day
+    while newday > calendar.monthrange(newyear, newmonth)[1]:
+        newday -= 1
+    dati = dati.replace(year=newyear, month=newmonth, day=newday)
     timestr = time.strftime("%Y-%m-%d", dati.timetuple())
     assert Chronyk("in 4 months", timezone=0).relativestring() == timestr
 

@@ -220,14 +220,14 @@ class Chronyk:
                 match = re.match(r".*?([0-9]+?) month", timestr)
                 assert match is not None
                 months = int(match.group(1))
+                newyear = dati.year + int(((dati.month - 1) + months * coef) / 12)
                 newmonth = (((dati.month - 1) + months * coef) % 12) + 1
-                newyear = dati.year + (((dati.month - 1) + months * coef) / 12)
-                dati = dati.replace(year=int(newyear), month=int(newmonth))
+                newday = dati.day
+                while newday > calendar.monthrange(newyear, newmonth)[1]:
+                    newday -= 1
+                dati = dati.replace(year=newyear, month=newmonth, day=newday)
             except AssertionError:
                 pass
-            # correct things like 31 Jan + 1 month => 31 Feb
-            while dati.day > calendar.monthrange(dati.year, dati.month)[1]:
-                dati = dati.replace(day=dati.day - 1)
 
         delta = {
             "weeks": 0,
