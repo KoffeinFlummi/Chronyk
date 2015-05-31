@@ -382,7 +382,7 @@ class Chronyk:
                 return timestamp
 
     def __fromstring__(self, timestr):
-        timestr = timestr.lower().strip()
+        timestr = timestr.lower().strip().replace(". ", " ")
 
         # COMMON NAMES FOR TIMES
         if timestr in ["today", "now", "this week", "this month", "this day"]:
