@@ -41,6 +41,10 @@ $ pip install chronyk
 '2014-09-09'
 >>> t.relativestring()
 '3 days ago'
+>>> t.date()
+datetime.date(2014, 9, 9)
+>>> t.datetime()
+datetime.datetime(2014, 9, 9, 5, 59, 39)
 ```
 
 **Input validation:**
