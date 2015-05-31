@@ -169,6 +169,10 @@ def test_typeerror():
 def test_datetime():
     timest = currentutc()
     assert Chronyk(timest, timezone=0).datetime() == datetime.datetime.fromtimestamp(timest)
+    
+def test_date():
+    timest = currentutc()
+    assert Chronyk(timest, timezone=0).date() == datetime.date.fromtimestamp(timest)
 
 def test_timest_1():
     timest = time.time()
