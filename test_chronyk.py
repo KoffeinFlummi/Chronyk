@@ -42,6 +42,14 @@ def test_yesterday():
 def test_yesteryear():
     assert Chronyk("yesteryear").relativestring() == Chronyk("1 year ago").relativestring()
 
+# TEST PRE-EPOCH DATES
+
+def test_pre_epoch_1():
+    assert Chronyk(datetime.datetime(1950, 1, 1)).datetime() == datetime.datetime(1950, 1, 1)
+
+def test_pre_epoch_2():
+    assert Chronyk(time.strptime("1950 01 01", "%Y %m %d")).timestring("%Y %m %d") == "1950 01 01"
+
 # ABSOLUTE STRINGS
 
 def test_absolute_iso():
