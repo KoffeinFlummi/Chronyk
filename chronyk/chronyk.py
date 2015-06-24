@@ -7,7 +7,7 @@ import collections
 import datetime
 import calendar
 
-LOCALTZ = time.timezone - 3600 * time.localtime().tm_isdst
+LOCALTZ = time.altzone
 
 
 def currentutc():
