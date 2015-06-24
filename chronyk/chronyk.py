@@ -10,6 +10,17 @@ import calendar
 LOCALTZ = time.altzone
 
 
+def _mktime(time_struct):
+    """Custom mktime because Windows can't be arsed to properly do pre-Epoch
+    dates, probably because it's busy counting all its chromosomes.
+    """
+    try:
+        return time.mktime(time_struct)
+    except OverflowError:
+        dt = datetime.datetime(*time_struct[:6])
+        return dt.timestamp()
+
+
 def currentutc():
     """Returns the current UTC timestamp.
 
@@ -108,10 +119,10 @@ class Chronyk:
 
         elif type(timestr) in [
                 datetime.datetime, datetime.date, datetime.time]:
-            self.__timestamp__ = time.mktime(timestr.timetuple())
+            self.__timestamp__ = _mktime(timestr.timetuple()) + self.timezone
 
         elif type(timestr) == time.struct_time:
-            self.__timestamp__ = time.mktime(timestr) + self.timezone
+            self.__timestamp__ = _mktime(timestr) + self.timezone
 
         else:
             raise TypeError("Failed to recognize given type.")
@@ -255,7 +266,7 @@ class Chronyk:
 
         dati = dati + datetime.timedelta(**delta)
 
-        return time.mktime(dati.timetuple())
+        return _mktime(dati.timetuple())
 
     def __fromabsolute__(self, timestr):
         # http://en.wikipedia.org/wiki/Date_format_by_country
@@ -360,7 +371,7 @@ class Chronyk:
             except ValueError:
                 pass
             else:
-                timestamp = time.mktime(struct)
+                timestamp = _mktime(struct)
                 if "z" not in dateformat.lower():
                     # string doesn't contains timezone information.
                     timestamp += self.timezone
@@ -375,7 +386,7 @@ class Chronyk:
             except ValueError:
                 pass
             else:
-                timestamp = time.mktime(struct)
+                timestamp = _mktime(struct)
                 if "z" not in timeformat.lower():
                     # string doesn't contains timezone information.
                     timestamp += self.timezone
@@ -391,7 +402,7 @@ class Chronyk:
             return currentutc() - 24 * 3600
         if timestr in ["yesteryear", "yester year"]:
             dati = datetime.datetime.utcnow()
-            return time.mktime(dati.replace(year=dati.year - 1).timetuple())
+            return _mktime(dati.replace(year=dati.year - 1).timetuple())
 
         # RELATIVE TIMES
         relative = self.__fromrelative__(timestr)
