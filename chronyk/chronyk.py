@@ -18,7 +18,9 @@ def _mktime(time_struct):
         return time.mktime(time_struct)
     except OverflowError:
         dt = datetime.datetime(*time_struct[:6])
-        return dt.timestamp()
+        ep = datetime.datetime(1970, 1, 1)
+        diff = dt - ep
+        return diff.days * 24 * 3600 + diff.seconds
 
 
 def currentutc():
