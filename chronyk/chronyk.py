@@ -13,6 +13,8 @@ LOCALTZ = time.altzone
 def _isdst(dt):
     """Check if date is in dst.
     """
+    if type(dt) == datetime.date:
+        dt = datetime.datetime.combine(dt, datetime.datetime.min.time())
     dtc = dt.replace(year=datetime.datetime.now().year)
     if time.localtime(dtc.timestamp()).tm_isdst == 1:
         return True
@@ -68,6 +70,36 @@ def _gmtime(timestamp):
         dt = datetime.datetime(1970, 1, 1) + datetime.timedelta(seconds=timestamp)
         dst = int(_isdst(dt))
         return time.struct_time(dt.timetuple()[:8] + tuple([dst]))
+
+
+def _dtfromtimestamp(timestamp):
+    """Custom datetime timestamp constructor. because Windows. again.
+    """
+    try:
+        raise OSError
+        return datetime.datetime.fromtimestamp(timestamp)
+    except OSError:
+        timestamp -= time.timezone
+        dt = datetime.datetime(1970, 1, 1) + datetime.timedelta(seconds=timestamp)
+        if _isdst(dt):
+            timestamp += 3600
+            dt = datetime.datetime(1970, 1, 1) + datetime.timedelta(seconds=timestamp)
+        return dt
+
+
+def _dfromtimestamp(timestamp):
+    """Custom date timestamp constructor. ditto
+    """
+    try:
+        raise OSError
+        return datetime.date.fromtimestamp(timestamp)
+    except OSError:
+        timestamp -= time.timezone
+        d = datetime.date(1970, 1, 1) + datetime.timedelta(seconds=timestamp)
+        if _isdst(d):
+            timestamp += 3600
+            d = datetime.date(1970, 1, 1) + datetime.timedelta(seconds=timestamp)
+        return d
 
 
 def currentutc():
@@ -479,7 +511,7 @@ class Chronyk:
         """
         if timezone is None:
             timezone = self.timezone
-        return datetime.datetime.fromtimestamp(self.__timestamp__ - timezone)
+        return _dtfromtimestamp(self.__timestamp__ - timezone)
         
     def date(self, timezone=None):
         """Returns a datetime.date object.
@@ -493,7 +525,7 @@ class Chronyk:
         """
         if timezone is None:
             timezone = self.timezone
-        return datetime.date.fromtimestamp(self.__timestamp__ - timezone)
+        return _dfromtimestamp(self.__timestamp__ - timezone)
 
     def timestamp(self, timezone=None):
         """Returns a timestamp (seconds since the epoch).
