@@ -10,6 +10,15 @@ import calendar
 LOCALTZ = time.altzone
 
 
+def _isdst(dt):
+    """Check if date is in dst.
+    """
+    dtc = dt.replace(year=datetime.datetime.now().year)
+    if time.localtime(dt.timestamp()).tm_isdst == 1:
+        return True
+    return False
+
+
 def _mktime(time_struct):
     """Custom mktime because Windows can't be arsed to properly do pre-Epoch
     dates, probably because it's busy counting all its chromosomes.
@@ -23,27 +32,30 @@ def _mktime(time_struct):
         ts = diff.days * 24 * 3600 + diff.seconds + time.timezone
         if time_struct.tm_isdst == 1:
             ts -= 3600
-        if time_struct.tm_isdst == -1: # Guess if DST is in effect for -1
-            dt = dt.replace(year=datetime.datetime.now().year)
-            if time.localtime(dt.timestamp()).tm_isdst == 1:
-                ts -= 3600
+        # Guess if DST is in effect for -1
+        if time_struct.tm_isdst == -1 and _isdst(dt):
+            ts -= 3600
         return ts
 
 
-def _strftime(pattern, time_struct):
+def _strftime(pattern, time_struct=time.localtime()):
     """Custom strftime because Windows is shit again.
     """
     try:
+        raise OSError
         return time.strftime(pattern, time_struct)
     except OSError:
         dt = datetime.datetime.fromtimestamp(_mktime(time_struct))
         # This is incredibly hacky and will probably break with leap
-        # years and shit. Any complaints should go here:
+        # year overlaps and shit. Any complaints should go here:
         # https://support.microsoft.com/
         original = dt.year
         current = datetime.datetime.now().year
         dt = dt.replace(year=current)
-        string = time.strftime(pattern, dt.timetuple())
+        ts = dt.timestamp()
+        if _isdst(dt):
+            ts -= 3600
+        string = time.strftime(pattern, time.localtime(ts))
         string = string.replace(str(current), str(original))
         return string
 
