@@ -59,6 +59,17 @@ def _strftime(pattern, time_struct=time.localtime()):
         return string
 
 
+def _gmtime(timestamp):
+    """Custom gmtime because yada yada.
+    """
+    try:
+        return time.gmtime(timestamp)
+    except OSError:
+        dt = datetime.datetime(1970, 1, 1) + datetime.timedelta(seconds=timestamp)
+        dst = int(_isdst(dt))
+        return time.struct_time(dt.timetuple()[:8] + tuple([dst]))
+
+
 def currentutc():
     """Returns the current UTC timestamp.
 
@@ -528,7 +539,7 @@ class Chronyk:
             timezone = self.timezone
         timestamp = self.__timestamp__ - timezone
         timestamp -= LOCALTZ
-        return _strftime(pattern, time.gmtime(timestamp))
+        return _strftime(pattern, _gmtime(timestamp))
 
     def relativestring(
             self, now=None, minimum=10, maximum=3600 * 24 * 30,
