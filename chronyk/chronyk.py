@@ -30,6 +30,24 @@ def _mktime(time_struct):
         return ts
 
 
+def _strftime(pattern, time_struct):
+    """Custom strftime because Windows is shit again.
+    """
+    try:
+        return time.strftime(pattern, time_struct)
+    except OSError:
+        dt = datetime.datetime.fromtimestamp(_mktime(time_struct))
+        # This is incredibly hacky and will probably break with leap
+        # years and shit. Any complaints should go here:
+        # https://support.microsoft.com/
+        original = dt.year
+        current = datetime.datetime.now().year
+        dt = dt.replace(year=current)
+        string = time.strftime(pattern, dt.timetuple())
+        string = string.replace(str(current), str(original))
+        return string
+
+
 def currentutc():
     """Returns the current UTC timestamp.
 
@@ -388,7 +406,7 @@ class Chronyk:
 
         # Time (using today as date)
         for timeformat in timeformats:
-            timestr_full = time.strftime("%Y-%m-%d") + " " + timestr
+            timestr_full = _strftime("%Y-%m-%d") + " " + timestr
             format_full = "%Y-%m-%d {}".format(timeformat)
             try:
                 struct = time.strptime(timestr_full, format_full)
@@ -499,7 +517,7 @@ class Chronyk:
             timezone = self.timezone
         timestamp = self.__timestamp__ - timezone
         timestamp -= LOCALTZ
-        return time.strftime(pattern, time.gmtime(timestamp))
+        return _strftime(pattern, time.gmtime(timestamp))
 
     def relativestring(
             self, now=None, minimum=10, maximum=3600 * 24 * 30,
