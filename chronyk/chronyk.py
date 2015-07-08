@@ -14,7 +14,7 @@ def _isdst(dt):
     """Check if date is in dst.
     """
     dtc = dt.replace(year=datetime.datetime.now().year)
-    if time.localtime(dt.timestamp()).tm_isdst == 1:
+    if time.localtime(dtc.timestamp()).tm_isdst == 1:
         return True
     return False
 
@@ -42,7 +42,6 @@ def _strftime(pattern, time_struct=time.localtime()):
     """Custom strftime because Windows is shit again.
     """
     try:
-        raise OSError
         return time.strftime(pattern, time_struct)
     except OSError:
         dt = datetime.datetime.fromtimestamp(_mktime(time_struct))
