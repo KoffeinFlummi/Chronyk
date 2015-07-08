@@ -76,7 +76,6 @@ def _dtfromtimestamp(timestamp):
     """Custom datetime timestamp constructor. because Windows. again.
     """
     try:
-        raise OSError
         return datetime.datetime.fromtimestamp(timestamp)
     except OSError:
         timestamp -= time.timezone
@@ -91,7 +90,6 @@ def _dfromtimestamp(timestamp):
     """Custom date timestamp constructor. ditto
     """
     try:
-        raise OSError
         return datetime.date.fromtimestamp(timestamp)
     except OSError:
         timestamp -= time.timezone
