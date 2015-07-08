@@ -20,7 +20,14 @@ def _mktime(time_struct):
         dt = datetime.datetime(*time_struct[:6])
         ep = datetime.datetime(1970, 1, 1)
         diff = dt - ep
-        return diff.days * 24 * 3600 + diff.seconds
+        ts = diff.days * 24 * 3600 + diff.seconds + time.timezone
+        if time_struct.tm_isdst == 1:
+            ts -= 3600
+        if time_struct.tm_isdst == -1: # Guess if DST is in effect for -1
+            dt.replace(year=datetime.datetime.now().year)
+            if time.localtime(dt.timestamp()).tm_isdst == 1:
+                ts -= 3600
+        return ts
 
 
 def currentutc():
