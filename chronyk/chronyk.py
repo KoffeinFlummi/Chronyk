@@ -24,7 +24,7 @@ def _mktime(time_struct):
         if time_struct.tm_isdst == 1:
             ts -= 3600
         if time_struct.tm_isdst == -1: # Guess if DST is in effect for -1
-            dt.replace(year=datetime.datetime.now().year)
+            dt = dt.replace(year=datetime.datetime.now().year)
             if time.localtime(dt.timestamp()).tm_isdst == 1:
                 ts -= 3600
         return ts
