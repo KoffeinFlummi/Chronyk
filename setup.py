@@ -8,7 +8,7 @@ def read(fname):
 
 setup(
     name = "Chronyk",
-    version = "1.0",
+    version = "1.0.1",
     
     packages = ["chronyk"],
     install_requires = [],
