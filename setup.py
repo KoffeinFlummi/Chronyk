@@ -21,7 +21,6 @@ setup(
     keywords = "time date clock human parser timezone",
     url = "https://github.com/KoffeinFlummi/Chronyk",
     classifiers = [
-        "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",
         "License :: OSI Approved :: MIT License",
         "Natural Language :: English",
